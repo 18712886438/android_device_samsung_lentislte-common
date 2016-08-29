@@ -122,8 +122,6 @@ static char *camera_fixup_getparams(int __attribute__((unused)) id,
     ALOGV("%s: original parameters:", __FUNCTION__);
     params.dump();
 
-    params.set(CameraParameters::KEY_SUPPORTED_SCENE_MODES, "auto");
-
     const char *recordHint = params.get(CameraParameters::KEY_RECORDING_HINT);
     bool videoMode = recordHint ? !strcmp(recordHint, "true") : false;
 
