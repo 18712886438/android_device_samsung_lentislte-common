@@ -99,4 +99,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
 #Maintainer
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.mk.maintainer=CallMESuper
+    
+# Burn-in protection
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.systemui.burn_in_protection=true
 
