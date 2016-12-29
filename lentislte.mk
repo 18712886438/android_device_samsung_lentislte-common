@@ -240,8 +240,7 @@ PRODUCT_PACKAGES += \
 
 # Samsung symbols
 PRODUCT_PACKAGES += \
-    libshim_ril \
-    libshim_rmt \
+    libsamsung_symbols \
     libshim_qcopt
 
 # Torch
@@ -280,7 +279,8 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libcnefeatureconfig \
     libril_shim \
-    librmt_shim
+    librmt_shim \
+    libprotobuf-cpp-full
 
 # Reduce client buffer size for fast audio output tracks
 PRODUCT_PROPERTY_OVERRIDES += \
