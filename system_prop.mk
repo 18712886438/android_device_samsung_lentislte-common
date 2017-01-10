@@ -36,7 +36,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Media
 PRODUCT_PROPERTY_OVERRIDES += \
-    mm.enable.smoothstreaming=true
+    mm.enable.smoothstreaming=true \
+    media.stagefright.legacyencoder=true \
+    media.stagefright.less-secure=true \
 
 # Nitz
 PRODUCT_PROPERTY_OVERRIDES += \
