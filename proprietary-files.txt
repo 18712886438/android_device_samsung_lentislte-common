@@ -17,7 +17,7 @@ etc/Hdmi_cal.acdb
 etc/Headset_cal.acdb
 etc/Speaker_cal.acdb
 lib/libcsd-client.so
-vendor/lib/libdetectmodem.so
+#vendor/lib/libdetectmodem.so
 lib/libmysound.so
 lib/libssaudio-client.so
 vendor/lib/libacdbloader.so
@@ -291,7 +291,7 @@ vendor/lib/librpmb.so
 vendor/lib/libssd.so
 vendor/lib/libwvdrm_L1.so
 vendor/lib/libwvm.so
--vendor/lib/libWVphoneAPI.so
+#vendor/lib/libWVphoneAPI.so
 vendor/lib/libWVStreamControlAPI_L1.so
 
 # Fingerprint
@@ -310,12 +310,12 @@ lib/libloc_api_v02.so
 lib/libloc_eng.so
 lib/libloc_core.so
 vendor/lib/hw/flp.default.so
-vendor/lib/libalarmservice_jni.so
+#vendor/lib/libalarmservice_jni.so
 vendor/lib/libgeofence.so
 vendor/lib/libizat_core.so
 vendor/lib/liblbs_core.so
-vendor/lib/liblocationservice.so
-vendor/lib/libulp2.so
+#vendor/lib/liblocationservice.so
+#vendor/lib/libulp2.so
 
 # Graphics
 vendor/lib/egl/eglSubDriverAndroid.so
@@ -443,15 +443,10 @@ etc/firmware/rampatch_tlv_1.3.tlv
 etc/firmware/rampatch_tlv_2.1.tlv
 etc/firmware/rampatch_tlv_3.0.tlv
 vendor/lib/libbtnv.so
-vendor/firmware/BT_FW_VER_rampatch_tlv_2.1.tlv
+#vendor/firmware/BT_FW_VER_rampatch_tlv_2.1.tlv
 
 # Nfc
 vendor/firmware/libpn547_fw.so
 
 #Adsp
 vendor/lib/rfsa/adsp/libadsp_fd_skel.so
-vendor/lib/rfsa/adsp/libapps_mem_heap.so
-vendor/lib/rfsa/adsp/libdspCV_skel.so
-vendor/lib/rfsa/adsp/libfastcvadsp_skel.so
-vendor/lib/rfsa/adsp/libfastcvadsp.so
-vendor/lib/rfsa/adsp/libscveT2T_skel.so
