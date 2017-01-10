@@ -130,8 +130,8 @@ PRODUCT_PACKAGES += \
     memtrack.apq8084
 
 # Doze service
-PRODUCT_PACKAGES += \
-    SamsungDoze
+#PRODUCT_PACKAGES += \
+#    SamsungDoze
 
 PRODUCT_PACKAGES += \
    libhealthd.default
@@ -161,6 +161,10 @@ PRODUCT_PACKAGES += \
     ebtables \
     ethertypes
 
+# IR Blaster
+PRODUCT_PACKAGES += \
+    consumerir.apq8084
+
 # Keylayouts
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/sec_touchkey.kl:system/usr/keylayout/sec_touchkey.kl \
@@ -170,13 +174,6 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/keylayout/Vendor_04e8_Product_7021.kl:system/usr/keylayout/Vendor_04e8_Product_7021.kl \
     $(LOCAL_PATH)/idc/Synaptics_HID_TouchPad.idc:system/usr/idc/Synaptics_HID_TouchPad.idc \
     $(LOCAL_PATH)/idc/sec_touchscreen.idc:system/usr/idc/sec_touchscreen.idc
-
-# Keystore
-PRODUCT_PACKAGES += \
-    keystore.apq8084
-
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    sys.keymaster.loaded=true
 
 # Lights
 PRODUCT_PACKAGES += \
