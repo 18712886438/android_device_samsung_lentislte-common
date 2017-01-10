@@ -35,7 +35,6 @@ TARGET_SCREEN_HEIGHT := 2560
 TARGET_SCREEN_WIDTH := 1440
 
 PRODUCT_PROPERTY_OVERRIDES += \
-   dalvik.vm.heapgrowthlimit=256m
 
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-3072-dalvik-heap.mk)
 
@@ -43,7 +42,6 @@ $(call inherit-product-if-exists, frameworks/native/build/phone-xxxhdpi-3072-hwu
 
 # Permissions
 PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/com.qualcomm.wfd.permissions.xml:system/etc/permissions/com.qualcomm.wfd.permissions.xml\
     frameworks/native/data/etc/android.hardware.nfc.xml:system/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:system/etc/permissions/android.hardware.nfc.hce.xml \
     frameworks/native/data/etc/android.hardware.telephony.cdma.xml:system/etc/permissions/android.hardware.telephony.cdma.xml \
@@ -76,9 +74,6 @@ PRODUCT_COPY_FILES += \
     frameworks/native/data/etc/com.nxp.mifare.xml:system/etc/permissions/com.nxp.mifare.xml \
     frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml
 
-PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
-    persist.sys.usb.config=none
-    
 # Audio
 PRODUCT_PACKAGES += \
     audiod \
@@ -251,6 +246,7 @@ PRODUCT_PACKAGES += \
 # Wifi
 PRODUCT_PACKAGES += \
     dhcpcd.conf \
+    macloader \
     hostapd \
     wpa_supplicant \
     wpa_supplicant.conf
