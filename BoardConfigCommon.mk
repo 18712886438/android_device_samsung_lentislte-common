@@ -19,25 +19,9 @@
 
 LOCAL_PATH := device/samsung/lentislte-common
 
-# Assert
-BOARD_USES_QCOM_HARDWARE := true
-
-# Platform
-TARGET_BOARD_PLATFORM := apq8084
-TARGET_BOARD_PLATFORM_GPU := qcom-adreno420
-USE_CLANG_PLATFORM_BUILD := true
-
-# Bootloader
-TARGET_BOOTLOADER_BOARD_NAME := APQ8084
-TARGET_NO_BOOTLOADER := true
-
 # Architecture
-TARGET_ARCH := arm
-TARGET_ARCH_VARIANT := armv7-a-neon
-TARGET_CPU_ABI := armeabi-v7a
-TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_VARIANT := krait
-TARGET_USE_QCOM_BIONIC_OPTIMIZATION := true
+
 ENABLE_CPUSETS := true
 
 # L1/L2 cache size parameters by @JustArchi
@@ -62,9 +46,8 @@ BOARD_HAS_QCA_BT_ROME := true
 
 # Camera
 TARGET_USE_COMPAT_GRALLOC_ALIGN := true
-TARGET_PROVIDES_CAMERA_HAL := true
+TARGET_HAS_LEGACY_CAMERA_HAL1 := true
 USE_DEVICE_SPECIFIC_CAMERA := true
-COMMON_GLOBAL_CFLAGS += -DSAMSUNG_CAMERA_HARDWARE
 
 # Charger
 BOARD_BATTERY_DEVICE_NAME := "battery"
@@ -73,7 +56,7 @@ BOARD_CHARGING_CMDLINE_VALUE := "true"
 
 # MKHW
 BOARD_HARDWARE_CLASS += hardware/samsung/mkhw
-BOARD_HARDWARE_CLASS += device/samsung/lentislte-common/mkhw
+BOARD_HARDWARE_CLASS += device/samsung/lentislte-common/mkhw   
 
 # Display
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
@@ -91,6 +74,8 @@ EXTENDED_FONT_FOOTPRINT := true
 TARGET_NO_RPC := true
 USE_DEVICE_SPECIFIC_GPS := true
 
+BLOCK_BASED_OTA := true
+
 # Include path
 TARGET_SPECIFIC_HEADER_PATH := $(LOCAL_PATH)/include
 
@@ -103,18 +88,19 @@ BOARD_MKBOOTIMG_ARGS := --ramdisk_offset 0x02600000 --tags_offset 0x02400000 --s
 TARGET_KERNEL_ARCH := arm
 TARGET_KERNEL_VARIANT_CONFIG  := dummy_defconfig
 
-ifneq ($(filter lentislte,$(TARGET_DEVICE)),)
 TARGET_KERNEL_SOURCE := kernel/samsung/lentislte
-else
-TARGET_KERNEL_SOURCE := kernel/samsung/kccat6
-endif
+# Display
+SF_VSYNC_EVENT_PHASE_OFFSET_NS := 5000000
+VSYNC_EVENT_PHASE_OFFSET_NS := 7500000
+
+# Legacy BLOB Support
+TARGET_NEEDS_PLATFORM_TEXT_RELOCATIONS := true
 
 # Lights
 TARGET_PROVIDES_LIBLIGHT := true
 
 # Media
 TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
-TARGET_USES_ION := true
 
 # Partitions
 BOARD_FLASH_BLOCK_SIZE := 131072
@@ -139,6 +125,9 @@ USE_DEVICE_SPECIFIC_DATASERVICES := true
 COMMON_GLOBAL_CFLAGS += -DQCOM_BSP
 TARGET_USES_QCOM_BSP := true
 
+# Radio
+BOARD_RIL_CLASS := ../../../device/samsung/lentislte-common/ril
+
 # Recovery
 TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/etc/fstab.qcom
 TARGET_USERIMAGES_USE_EXT4 := true
@@ -152,14 +141,6 @@ BOARD_SEPOLICY_DIRS += \
 
 # Time
 BOARD_USES_QC_TIME_SERVICES := true
-
-# Sensors
-TARGET_NO_SENSOR_PERMISSION_CHECK := true
-
-
-# NFC
-BOARD_NFC_CHIPSET := pn547
-BOARD_NFC_DEVICE := "/dev/pn547"
 
 # Wifi
 BOARD_HAS_QCOM_WLAN := true
