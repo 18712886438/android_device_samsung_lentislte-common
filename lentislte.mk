@@ -130,8 +130,8 @@ PRODUCT_PACKAGES += \
     memtrack.apq8084
 
 # Doze service
-#PRODUCT_PACKAGES += \
-#    SamsungDoze
+PRODUCT_PACKAGES += \
+    SamsungDoze
 
 PRODUCT_PACKAGES += \
    libhealthd.default
