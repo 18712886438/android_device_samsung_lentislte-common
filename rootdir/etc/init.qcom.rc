@@ -517,6 +517,10 @@ on property:ro.debuggable=1
     chown system camera /sys/class/flash/flash/flash_power
     chmod 660 /sys/class/flash/flash/flash_power
 
+    # Create directories for perfd
+    mkdir /data/misc/perfd 2755 root system
+    mkdir /data/system/perfd 2770 root system
+
     # CM: We use our own ril-daemon service definition, see mmi-ril-daemon
     stop ril-daemon
 
@@ -610,7 +614,7 @@ on boot
     chmod 0770 /data/firmware
     chown system system /data/firmware
     chmod 0660 /dev/ttyHS3
-    chown media system /dev/ttyHS3
+    chown media audio /dev/ttyHS3
 
     #DBMD2
     chmod 0660 /dev/dbd20
@@ -1306,7 +1310,7 @@ service adsprpcd /system/bin/adsprpcd
 service qcamerasvr /system/bin/mm-qcamera-daemon
     class main
     user camera
-    group camera system inet input graphics radio sdcard_rw sdcard_r media_rw shell log
+    group camera system inet input graphics radio sdcard_rw sdcard_r media_rw shell log net_bt_stack
     writepid /dev/cpuset/system-background/tasks
 
 service sensorhubservice /system/bin/sensorhubservice
@@ -1330,7 +1334,7 @@ service qseecomd /system/bin/qseecomd
     group root
 
 service time_daemon /system/bin/time_daemon
-    class late_start
+    class main
     user root
     group root
 
