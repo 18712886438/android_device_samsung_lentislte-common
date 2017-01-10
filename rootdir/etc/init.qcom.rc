@@ -26,10 +26,10 @@
 #
 
 import init.qcom.usb.rc
+import init.qcom.power.rc
 
 on early-init
     setprop sys.boot_completed 0
-    export LD_SHIM_LIBS /system/lib/libril.so|libshim_ril.so:/system/bin/rmt_storage|libshim_ril.so
 
     mount debugfs debugfs /sys/kernel/debug
     write /sys/block/mmcblk0/queue/scheduler noop
@@ -39,6 +39,7 @@ on early-init
     symlink /data/tombstones /tombstones
 
 on init
+    export LD_SHIM_LIBS /system/lib/libril.so|libril_shim.so:rmt_storage|librmt_shim.so:/system/vendor/lib/libqc-opt.so|libshim_qcopt.so
     mkdir /efs 0771 system radio
 
     # Set permissions for persist partition
@@ -139,6 +140,7 @@ on post-fs-data
     chown system wifi /efs/wifi/.mac.info
     chmod 0660 /efs/wifi/.mac.info
     chmod 0660 /efs/wifi/.mac.cob
+    restorecon /efs/wifi/.mac.info
 
     # Create directory used by audio subsystem
     mkdir /data/misc/audio 0770 audio audio
@@ -186,16 +188,9 @@ on post-fs-data
     chown system system /sys/class/input/input2/enabled
 
     # Vibrator
-    chmod 0644 /sys/class/timed_output/vibrator/pwm_value
-    chown root system /sys/class/timed_output/vibrator/pwm_value
-    chmod 0644 /sys/class/timed_output/vibrator/pwm_max
-    chown root system /sys/class/timed_output/vibrator/pwm_max
-    chmod 0644 /sys/class/timed_output/vibrator/pwm_min
-    chown root system /sys/class/timed_output/vibrator/pwm_min
-    chmod 0644 /sys/class/timed_output/vibrator/pwm_default
-    chown root system /sys/class/timed_output/vibrator/pwm_default
-    chmod 0644 /sys/class/timed_output/vibrator/pwm_threshold
-    chown root system /sys/class/timed_output/vibrator/pwm_threshold
+    chmod 0660 /sys/class/timed_output/vibrator/intensity
+    chown system system /sys/class/timed_output/vibrator/intensity
+    chown system system /sys/class/timed_output/vibrator/enable
 
     #Create the symlink to qcn wpa_supplicant folder for ar6000 wpa_supplicant
     mkdir /data/system 0775 system system
@@ -307,7 +302,7 @@ on property:ro.debuggable=1
     mkdir /efs/drm/sdrm/data_agent 0774 drm system
     restorecon /efs/drm
     restorecon /efs/drm/sdrm
-    restorecon /efs/drm/data_agent
+    restorecon /efs/drm/sdrm/data_agent
 
     # DivX DRM
     mkdir /efs/.files 0775
@@ -530,6 +525,10 @@ on early-boot
     setrlimit 8 67108864 67108864
     # Allow subsystem (modem etc) debugging
     write /sys/module/subsystem_restart/parameters/enable_debug ${persist.sys.ssr.enable_debug}
+    # Remove symlinks to avoid issues with migrate after nandroid restores
+    # Will be recreated at end of boot
+    rm /data/data/com.android.providers.telephony/databases/telephony.db
+    rm /data/data/com.android.providers.telephony/shared_prefs/preferred-apn.xml
     write /sys/kernel/boot_adsp/boot 1
 
 on boot
@@ -574,15 +573,23 @@ on boot
     chmod 0660 /dev/ttyHS2
     chown bluetooth bluetooth /dev/ttyHS2
 
+    chmod 0660 /sys/class/rfkill/rfkill0/device/extldo
+
     # for BT MAC address
     mkdir /efs/bluetooth 0775 radio system
     # if already exist
     chown radio system /efs/bluetooth
     chmod 0775 /efs/bluetooth
+
+    # permissions for bluetooth.
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
     chown bluetooth net_bt_stack ro.bt.bdaddr_path
-    chown radio net_bt_stack /efs/bluetooth/bt_addr
-    chmod 0640 /efs/bluetooth/bt_addr
+    chown bluetooth net_bt_stack /dev/ttyHS0
+    chmod 0660 /dev/ttyHS0
+    chmod 0660 /sys/class/rfkill/rfkill0/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/state
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/type
+    chown bluetooth net_bt_stack /sys/class/rfkill/rfkill0/device/extldo
 
     # Permissions for usb_lock
     chown system radio /sys/class/android_usb/android0/usb_lock
@@ -591,23 +598,24 @@ on boot
     chown wifi wifi /dev/rfkill
     chmod 0600 /dev/rfkill
 
-    #Audience ES705 UART
-    mkdir /data/firmware
-    chmod 0660 /dev/ttyHS3
-    chown media system /dev/ttyHS3
-    chmod 0770 /data/firmware
-    chown system system /data/firmware
-
-    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/device/extldo
-    chmod 0660 /sys/class/rfkill/rfkill0/device/extldo
-
     # bluetooth LPM
-    chmod 0220 /proc/bluetooth/sleep/lpm
+    chmod 0660 /proc/bluetooth/sleep/lpm
     chmod 0220 /proc/bluetooth/sleep/btwrite
     chown bluetooth net_bt_stack /proc/bluetooth/sleep/lpm
     chown bluetooth net_bt_stack /proc/bluetooth/sleep/btwrite
     chmod 0600 /dev/btlock
     chown bluetooth bluetooth /dev/btlock
+    #Audience ES705 UART
+    mkdir /data/firmware
+    chmod 0770 /data/firmware
+    chown system system /data/firmware
+    chmod 0660 /dev/ttyHS3
+    chown media system /dev/ttyHS3
+
+    #DBMD2
+    chmod 0660 /dev/dbd20
+    chown system system /dev/dbd20
+
 
     #Create QMUX deamon socket area
     mkdir /dev/socket/qmux_radio 0770 radio radio
@@ -619,7 +627,21 @@ on boot
     mkdir /dev/socket/qmux_gps 0770 gps gps
     chmod 2770 /dev/socket/qmux_gps
 
+    #Create PERFD deamon related dirs
+    mkdir /data/misc/perfd 0755 root system
+    chmod 2755 /data/misc/perfd
+    mkdir /data/system/perfd 0770 root system
+    chmod 2770 /data/system/perfd
+
+    #Create NETMGR daemon socket area
+    mkdir /dev/socket/netmgr 0750 radio radio
+
     setprop wifi.interface wlan0
+
+#   Define TCP buffer sizes for various networks
+#   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
+    setprop net.tcp.buffersize.wifi    524288,6291456,8291456,524288,6291456,8291456
+
 
     # Allow QMUX daemon to assign port open wait time
     chown radio radio /sys/devices/virtual/hsicctl/hsicctl0/modem_wait
@@ -647,6 +669,34 @@ on boot
     # For setting tcp delayed ack
     chown system system /sys/kernel/ipv4/tcp_delack_seg
     chown system system /sys/kernel/ipv4/tcp_use_userconfig
+
+#   Define TCP buffer sizes for various networks
+#   ReadMin, ReadInitial, ReadMax, WriteMin, WriteInitial, WriteMax,
+    setprop net.tcp.buffersize.default 4096,87380,524288,4096,16384,110208
+    setprop net.tcp.buffersize.lte     2097152,4194304,8388608,1048576,3145728,4194304
+    setprop net.tcp.buffersize.umts    4094,87380,110208,4096,16384,110208
+    setprop net.tcp.buffersize.hspa    4094,87380,1220608,4096,16384,1220608
+    setprop net.tcp.buffersize.hsupa   4094,87380,1220608,4096,16384,1220608
+    setprop net.tcp.buffersize.hsdpa   4094,87380,2441216,4096,16384,2441216
+    setprop net.tcp.buffersize.hspap   4094,87380,1220608,4096,16384,1220608
+    setprop net.tcp.buffersize.edge    4093,26280,35040,4096,16384,35040
+    setprop net.tcp.buffersize.gprs    4092,8760,11680,4096,8760,11680
+    setprop net.tcp.buffersize.evdo    4094,87380,524288,4096,16384,262144
+
+# Define TCP delayed ack settings for WiFi & LTE
+    setprop net.tcp.delack.default     1
+    setprop net.tcp.delack.wifi        20
+    setprop net.tcp.delack.lte         8
+    setprop net.tcp.usercfg.default    0
+    setprop net.tcp.usercfg.wifi       1
+    setprop net.tcp.usercfg.lte        1
+
+    setprop net.tcp.2g_init_rwnd 10
+
+#   Assign TCP buffer thresholds to be ceiling value of technology maximums
+#   Increased technology maximums should be reflected here.
+    write /proc/sys/net/core/rmem_max  8388608
+    write /proc/sys/net/core/wmem_max  8388608
 
     # create symlink for fb1 as HDMI
     symlink /dev/graphics/fb1 /dev/graphics/hdmi
@@ -684,18 +734,6 @@ on boot
     write /proc/sys/net/ipv6/conf/rmnet5/accept_ra 2
     write /proc/sys/net/ipv6/conf/rmnet6/accept_ra 2
     write /proc/sys/net/ipv6/conf/rmnet7/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio0/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio1/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio2/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio3/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio4/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio5/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio6/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_sdio7/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_usb0/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_usb1/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_usb2/accept_ra 2
-    write /proc/sys/net/ipv6/conf/rmnet_usb3/accept_ra 2
 
     # To prevent out of order acknowledgements from making
     # connection tracking to treat them as not belonging to
@@ -1147,6 +1185,7 @@ on boot
     chmod 0660 /dev/pn547
     chown nfc nfc /dev/pn547
     symlink /dev/pn547 /dev/pn544
+    symlink /dev/pn547 /dev/pn54x
 
     # NFC_SEC
     chmod 0660 /dev/sec-nfc
@@ -1205,19 +1244,18 @@ on boot
     chmod 0644 /efs/h2k.dat
     mkdir /data/misc/radio/hatp 0775 radio system
 
-    # Vibetonz
-    chmod 0660 /dev/tspdrv
-    chown root shell /dev/tspdrv
-    chown system system /sys/class/timed_output/vibrator/pwm_value
+    # Vibrator
     chmod 0660 /sys/class/timed_output/vibrator/pwm_value
+    chown system system /sys/class/timed_output/vibrator/pwm_value
+    chmod 0440 /sys/class/timed_output/vibrator/pwm_max
     chown system system /sys/class/timed_output/vibrator/pwm_max
-    chmod 0660 /sys/class/timed_output/vibrator/pwm_max
+    chmod 0440 /sys/class/timed_output/vibrator/pwm_min
     chown system system /sys/class/timed_output/vibrator/pwm_min
-    chmod 0660 /sys/class/timed_output/vibrator/pwm_min
+    chmod 0440 /sys/class/timed_output/vibrator/pwm_default
     chown system system /sys/class/timed_output/vibrator/pwm_default
-    chmod 0660 /sys/class/timed_output/vibrator/pwm_default
+    chmod 0440 /sys/class/timed_output/vibrator/pwm_threshold
     chown system system /sys/class/timed_output/vibrator/pwm_threshold
-    chmod 0660 /sys/class/timed_output/vibrator/pwm_threshold
+    chown system system /sys/class/timed_output/vibrator/enable
 
     # permissions for bluetooth.
     setprop ro.bt.bdaddr_path "/efs/bluetooth/bt_addr"
@@ -1254,6 +1292,7 @@ service fingerprintd /system/bin/fingerprintd
 service mmi-ril-daemon /system/bin/rild
     class main
     socket rild stream 660 root radio
+    socket sap_uim_socket1 stream 660 bluetooth bluetooth
     socket rild-debug stream 660 radio system
     socket rild-cas stream 660 casdrm mmb
     user root
@@ -1318,6 +1357,7 @@ service qmuxd /system/bin/qmuxd
 service mdm_helper /system/bin/mdm_helper
     class core
     onrestart setprop ro.service.mdm_helper_restarted "true"
+    group root system radio qcom_diag wakelock
     disabled
 
 service mdm_helper_proxy /system/bin/mdm_helper_proxy
@@ -1387,7 +1427,7 @@ on property:wc_transport.start_root=false
 service start_hci_filter /system/bin/wcnss_filter
     class late_start
     user root
-    group bluetooth qcom_diag
+    group bluetooth qcom_diag net_bt_stack
     disabled
 
 service config_bluetooth /system/bin/sh /system/etc/init.qcom.bt.sh "onboot"
@@ -1540,7 +1580,11 @@ on property:init.svc.p2p_supplicant=stopped
 
 service macloader /system/bin/macloader
     class main
+    user system
+    group wifi
     oneshot
+
+# end of wifi
 
 on property:sys.boot_completed=1
     write /dev/kmsg "Boot completed "
@@ -1613,7 +1657,7 @@ on property:service.bootanim.exit=1
 
 on charger
     #low power governing
-    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactiveX
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu1/online 0
     write /sys/devices/system/cpu/cpu2/online 0
     write /sys/devices/system/cpu/cpu3/online 0
