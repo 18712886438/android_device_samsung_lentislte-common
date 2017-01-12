@@ -34,8 +34,6 @@ PRODUCT_AAPT_PREBUILT_DPI := xxxhdpi xxhdpi xhdpi hdpi
 TARGET_SCREEN_HEIGHT := 2560
 TARGET_SCREEN_WIDTH := 1440
 
-PRODUCT_PROPERTY_OVERRIDES += \
-
 $(call inherit-product, frameworks/native/build/phone-xxxhdpi-3072-dalvik-heap.mk)
 
 $(call inherit-product-if-exists, frameworks/native/build/phone-xxxhdpi-3072-hwui-memory.mk)
@@ -142,9 +140,6 @@ PRODUCT_PACKAGES += \
     fingerprint.apq8084 \
     ValidityService
 
-PRODUCT_PROPERTY_OVERRIDES += \
-    fingerprint_enabled=1
-
 # GPS
 PRODUCT_PACKAGES += \
     gps.apq8084
@@ -175,9 +170,16 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/idc/Synaptics_HID_TouchPad.idc:system/usr/idc/Synaptics_HID_TouchPad.idc \
     $(LOCAL_PATH)/idc/sec_touchscreen.idc:system/usr/idc/sec_touchscreen.idc
 
+# Keystore
+PRODUCT_PACKAGES += \
+    keystore.apq8084
+
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+    sys.keymaster.loaded=true
+
 # Lights
 PRODUCT_PACKAGES += \
-    lights.APQ8084
+    lights.apq8084
 
 # Media
 PRODUCT_PACKAGES += \
