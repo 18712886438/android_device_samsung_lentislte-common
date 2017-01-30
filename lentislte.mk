@@ -276,7 +276,7 @@ PRODUCT_PACKAGES += \
 # Radio
 PRODUCT_PACKAGES += \
     libcnefeatureconfig \
-    libril_shim \
+    librmnetctl \
     librmt_shim \
     libprotobuf-cpp-full
 
