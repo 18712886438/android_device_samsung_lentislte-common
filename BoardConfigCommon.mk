@@ -24,9 +24,6 @@ TARGET_CPU_VARIANT := krait
 
 ENABLE_CPUSETS := true
 
-# L1/L2 cache size parameters by @JustArchi
-BOARD_GLOBAL_CFLAGS := --param l1-cache-size=32 --param l1-cache-line-size=16 --param l2-cache-size=2048
-
 # Audio
 BOARD_USES_ALSA_AUDIO := true
 AUDIO_FEATURE_ENABLED_FLUENCE := true
@@ -40,6 +37,9 @@ USE_CUSTOM_AUDIO_POLICY := 1
 
 # Bluetooth
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := $(LOCAL_PATH)/bluetooth
+
+# Bootloader
+TARGET_BOOTLOADER_BOARD_NAME := APQ8084
 
 # Camera
 TARGET_USE_COMPAT_GRALLOC_ALIGN := true
@@ -67,10 +67,6 @@ TARGET_USES_OVERLAY := true
 
 # Fonts
 EXTENDED_FONT_FOOTPRINT := true
-
-# GPS
-TARGET_NO_RPC := true
-USE_DEVICE_SPECIFIC_GPS := true
 
 BLOCK_BASED_OTA := true
 
@@ -127,15 +123,24 @@ TARGET_POWERHAL_VARIANT := qcom
 #CM_POWERHAL_EXTENSION := qcom
 TARGET_POWERHAL_SET_INTERACTIVE_EXT := $(LOCAL_PATH)/power/power_ext.c
 
+# Use Snapdragon LLVM if available on build server
+TARGET_USE_SDCLANG := true
+
 # Data services
 USE_DEVICE_SPECIFIC_DATASERVICES := true
 
 # Qualcomm support
 TARGET_GLOBAL_CFLAGS += -DQCOM_BSP
 TARGET_USES_QCOM_BSP := true
+BOARD_USES_QCOM_HARDWARE := true
 
 # Radio
 BOARD_RIL_CLASS := ../../../device/samsung/lentislte-common/ril
+
+# RIL
+TARGET_GLOBAL_CFLAGS += -DUSE_RIL_VERSION_10
+TARGET_GLOBAL_CPPFLAGS += -DUSE_RIL_VERSION_10
+TARGET_RIL_VARIANT := caf
 
 # Recovery
 TARGET_RECOVERY_FSTAB := $(LOCAL_PATH)/rootdir/etc/fstab.qcom

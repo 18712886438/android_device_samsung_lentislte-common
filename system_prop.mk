@@ -1,6 +1,7 @@
 # Art
 PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.dex2oat-swap=false
+    dalvik.vm.dex2oat-swap=false \
+    ro.sys.fw.dex2oat_thread_count=4
 
 # Audio
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -17,6 +18,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
     audio.offload.gapless.enabled=true \
     audio.offload.pcm.16bit.enable=true \
     audio.offload.pcm.24bit.enable=true
+
+# Camera
+PRODUCT_PROPERTY_OVERRIDES += \
+    camera2.portability.force_api=1
 
 # Display
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -72,6 +77,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.data.qmi.adb_logmask=0 \
     persist.radio.add_power_save=1 \
     persist.radio.lte_vrat_report=1 \
+    persist.radio.apm_sim_not_pwdn=1 \
     persist.net.doxlat=true \
     ro.telephony.mms_data_profile=5
 
