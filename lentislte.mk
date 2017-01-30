@@ -107,7 +107,7 @@ TARGET_BOOTANIMATION_HALF_RES := true
 PRODUCT_PACKAGES += \
     libxml2 \
     camera.apq8084 \
-    Snap
+    libstlport
 
 # Filesystem management tools
 PRODUCT_PACKAGES += \
