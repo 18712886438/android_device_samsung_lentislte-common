@@ -41,7 +41,7 @@ import java.util.Collections;
  * {@hide}
  */
 public class lentislteRIL extends RIL {
-    public trlteRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
+    public lentislteRIL(Context context, int preferredNetworkType, int cdmaSubscription) {
         super(context, preferredNetworkType, cdmaSubscription, null);
     }
 
